@@ -1,7 +1,4 @@
-package Concurrency.Concurrency_2.AdderSubtractor;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+package Concurrency.Concurrency_3.SynchronizedMethod;
 
 public class Client {
     public static void main(String[] args) throws Exception{

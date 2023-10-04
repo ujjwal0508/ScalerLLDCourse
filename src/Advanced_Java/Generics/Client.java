@@ -26,17 +26,17 @@ public class Client {
 
 //        List
 
-        Utilites utilites = new Utilites();
+//        Utilites utilites = new Utilites();
 
         // show type from object to string here
-        utilites.doSomething("abc", "def");
+        Utilites.doSomething("abc", "def");
 
         // not allowed as returns type of first which is string
 //        int val = utilites.getFirst("abc", "def");
 
-        int val = utilites.getFirst(1, "abc");
+        int val = Utilites.getFirst(1, "abc");
 
         // allowed as type as method level not at class level
-        utilites.getFirst("abc", 1);
+        Utilites.getFirst("abc", 1);
     }
 }

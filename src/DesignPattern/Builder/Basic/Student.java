@@ -1,14 +1,14 @@
 package DesignPattern.Builder.Basic;
 
 public class Student {
-    String name;
-    int age;
-    double psp;
-    String universityName;
-    String batch;
-    long id;
-    int gradYear;
-    String phoneNumber;
+    private String name;
+    private int age;
+    private double psp;
+    private String universityName;
+    private String batch;
+    private long id;
+    private int gradYear;
+    private String phoneNumber;
 
     public static Builder getBuilder(){
         return new Builder();

@@ -8,7 +8,7 @@ public class YesBankAPIAdapter implements BankAPIAdapter {
 
     @Override
     public double getBalance(String accountNumber) {
-        return 10;
+        return yesBankAPI.getBal();
     }
 
     @Override

@@ -7,7 +7,7 @@ public class Client {
         EmailSender emailSender = new EmailSender();
         InvoiceGenerator invoiceGenerator = new InvoiceGenerator();
         AnalyticsSender analyticsSender = new AnalyticsSender();
-        AnalyticsSender analyticsSender1 = new AnalyticsSender();
+        InventoryManagement inventoryManagement = new InventoryManagement();
 
         flipkart.orderPlaced();
     }

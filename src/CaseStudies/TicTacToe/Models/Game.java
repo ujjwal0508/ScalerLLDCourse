@@ -27,7 +27,7 @@ public class Game {
         this.board = new Board(dimension);
     }
 
-    public static Builder getBuilder(){
+    public static Builder getBuilder() {
         return new Builder();
     }
 
@@ -35,12 +35,21 @@ public class Game {
         this.board.print();
     }
 
+    private boolean checkWinner(Move move) {
+        for (WinningStrategy winningStrategy : winningStrategies) {
+            if (winningStrategy.checkWinner(board, move)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void makeMove() {
         Player currentMovePlayer = this.players.get(nextMovePlayerIdx);
 
         System.out.println("This is " + currentMovePlayer.getName() + "'s turn");
         Move move = currentMovePlayer.makeMove(board);
-        if(!validateMove(move)) {
+        if (!validateMove(move)) {
             System.out.println("You have made an invalid move");
             return;
         }
@@ -58,20 +67,48 @@ public class Game {
         nextMovePlayerIdx %= players.size();
 
         //check winner pending
+        if (checkWinner(finalMoveObj)) {
+            gameState = GameState.WIN;
+            winner = currentMovePlayer;
+        } else if (moves.size() == this.board.getSize() * this.board.getSize()) {
+            gameState = GameState.DRAW;
+        }
     }
 
     private boolean validateMove(Move move) {
         int row = move.getCell().getRow();
         int col = move.getCell().getCol();
 
-        if(row >= board.getSize() || col >= board.getSize())
+        if (row >= board.getSize() || col >= board.getSize())
             return false;
 
-        if(board.getBoard().get(row).get(col).getCellState().equals(CellState.EMPTY)){
+        if (board.getBoard().get(row).get(col).getCellState().equals(CellState.EMPTY)) {
             return true;
         }
 
         return false;
+    }
+
+    public void undo() {
+
+        if (moves.size() == 0)
+            return;
+
+        Move lastMove = moves.get(moves.size() - 1);
+
+        moves.remove(lastMove);
+
+        Cell cell = lastMove.getCell();
+        cell.setPlayer(null);
+        cell.setCellState(CellState.EMPTY);
+
+        //update winnning strategies
+        for (WinningStrategy winningStrategy : this.winningStrategies) {
+            winningStrategy.handleUndo(board, lastMove);
+        }
+
+        nextMovePlayerIdx--;
+        nextMovePlayerIdx = (nextMovePlayerIdx + players.size()) % players.size();
     }
 
     public static class Builder {
@@ -101,39 +138,39 @@ public class Game {
             return this;
         }
 
-        public Builder addPlayer(Player player){
+        public Builder addPlayer(Player player) {
             this.players.add(player);
             return this;
         }
 
-        public Builder addWinningStrategy(WinningStrategy winningStrategy){
+        public Builder addWinningStrategy(WinningStrategy winningStrategy) {
             this.winningStrategies.add(winningStrategy);
             return this;
         }
 
-        private void validateBotCount() throws Exception{
+        private void validateBotCount() throws Exception {
             int botCount = 0;
-            for(Player player: players){
-                if(player.getPlayerType().equals(PlayerType.BOT)){
+            for (Player player : players) {
+                if (player.getPlayerType().equals(PlayerType.BOT)) {
                     botCount++;
                 }
             }
 
-            if(botCount > 1){
+            if (botCount > 1) {
                 throw new MoreThanOneBotException();
             }
         }
 
-        private void validatePlayerCount() throws Exception{
-            if(players.size() != boardDimension - 1){
+        private void validatePlayerCount() throws Exception {
+            if (players.size() != boardDimension - 1) {
                 throw new PlayerCountDimensionMismatchException();
             }
         }
 
-        private  void validateUniquePlayerCharacters() throws Exception{
+        private void validateUniquePlayerCharacters() throws Exception {
             HashSet<Character> symbols = new HashSet<>();
-            for(Player player:players){
-                if(symbols.contains(player.getSymbol().getAchar())){
+            for (Player player : players) {
+                if (symbols.contains(player.getSymbol().getAchar())) {
                     throw new PlayerSymbolNotUniqueException();
                 }
                 symbols.add(player.getSymbol().getAchar());
@@ -147,10 +184,10 @@ public class Game {
 
         }
 
-        public Game build() throws Exception{
+        public Game build() throws Exception {
             try {
                 validate();
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 System.out.println("LOG LINE - There was an exception creating the game");
                 throw ex;
             }
